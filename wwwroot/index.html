@@ -11,33 +11,46 @@
 
     <div id="container">
         <nav class="box">
-            <div>
-                <i class="fa-solid fa-house fa-lg" style="width:23px;"></i>
-            </div>
+            <button class="hidden" id="btn-back">
+                <i class="fa-solid fa-arrow-left fa-2xl"></i>
+            </button>
             <div class="logo">Cafotto</div>
         </nav>
         <div id="content">
             <main class="box">
-                <div id="screen">
-                    <button id="table0" class="btnTable"></button>
-                    <button id="table1" class="btnTable"></button>
-                    <button id="table2" class="btnTable"></button>
-                    <button id="table3" class="btnTable"></button>
-                    <button id="table4" class="btnTable"></button>
-                    <button id="table5" class="btnTable"></button>
+                <div id="screen-table">
+                    <button id="table0" class="btn-table" data-table-id="0"></button>
+                    <button id="table1" class="btn-table" data-table-id="1"></button>
+                    <button id="table2" class="btn-table" data-table-id="2"></button>
+                    <button id="table3" class="btn-table" data-table-id="3"></button>
+                    <button id="table4" class="btn-table" data-table-id="4"></button>
+                    <button id="table5" class="btn-table" data-table-id="5"></button>
+                </div>
+                <div class="hidden" id="screen-menu">
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
+                    <div style="width: 150px; height: 200px; background-color:aqua;">menu</div>
                 </div>
             </main>
             <aside class="box">
-                <div class="orderItem">
+                <div class="order-items">
                     <ul>
-                        <li>dugacak tekst da proverim kako ce da stane</li>
-                        <li>dugacak tekst da proverim kako ce da stane</li>
-                        <li>dugacak tekst da proverim kako ce da stane</li>
-                        <li>dugacak tekst da proverim kako ce da stane</li>
-                        <li>dugacak tekst da proverim kako ce da stane</li>
                     </ul>
                 </div>
-                <div style="display:flex; flex-direction: column; gap:1em;">
+                <div class="aside-bottom">
                     <div style="text-align:right">Total: 200</div>
                     <button class="print">
                         Print

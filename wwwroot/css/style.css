@@ -2,6 +2,19 @@
     box-sizing: border-box;
 }
 
+body {
+    font-family: system-ui;
+}
+
+:root {
+    --color-primary: #303a42;
+    --color-secondary: #FFF2D7;
+    --color-accent: #643843;
+    --color-background: #3E3232;
+    --color-text: #FFF2D7;
+    --color-border: black;
+}
+
 /*#3E3232 #503C3C #7E6363 #A87C7C*/
 /*#FFF2D7 #643843 #303a42*/
 html, body {
@@ -10,16 +23,22 @@ html, body {
     height: 100%;
 }
 
+button {
+    background-color: transparent;
+    border: none;
+    color: var(--color-text);
+}
+
 .box {
-    background-color: #303a42;
+    background-color: var(--color-primary);
     border-radius: 1em;
     border: solid 2px black;
-    color: #FFF2D7;
+    color: var(--color-text);
     padding: 1em;
 }
 
 #container {
-    background-color: #3E3232;
+    background-color: var(--color-background);
     display: flex;
     height: 100%;
     flex-direction: column;
@@ -55,30 +74,54 @@ aside {
     align-items: center;
 }
 
-.orderItem {
+aside-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.order-items {
     flex: 0 0 2em;
     height: 2em;
 }
 
 .print {
-    background-color: #643843;
+    background-color: var(--color-accent);
     border-radius: 1em;
     border: solid 2px black;
     padding: 1em 2em;
-    color: #FFF2D7;
+    color: var(--color-text);
     width: 22em;
+}
+
+.hidden {
+    display: none !important;
 }
 
 main {
     position: relative;
     flex: 1 1 100%;
     padding: 1em;
-    background-color: #303a42;
 }
 
-#screen {
+#screen-table {
     background: url('/img/cafe_floor_plan.png') no-repeat 5% center;
     background-size: contain;
+    width: 100%;
+    height: 500px;
+}
+
+#screen-menu {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 1em 3em;
+    gap: 5em;
+    justify-content: space-between;
+    align-items: stretch;
+    overflow-y: auto;
+    scrollbar-color: var(--color-secondary) var(--color-accent);
+    scrollbar-width: thin;
     width: 100%;
     height: 500px;
 }
@@ -86,16 +129,17 @@ main {
 .logo {
     flex: 0 1 auto;
     border-radius: 1em;
-    border: 2px solid black;
+    border: 2px solid var(--color-border);
     padding: 1px 25px;
-    background-color: #643843;
+    background-color: var(--color-accent);
     font-size: 1.5rem;
     font-weight: bold;
     font-family: 'Segoe UI', sans-serif;
     text-align: center;
+    margin-left: auto;
 }
 
-.btnTable {
+.btn-table {
     border-radius: 50%;
     border: 1px solid red;
     background-color: transparent;
