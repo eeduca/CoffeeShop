@@ -117,8 +117,8 @@ main {
     flex-wrap: wrap;
     padding: 1em 3em;
     gap: 5em;
-    justify-content: space-between;
-    align-items: stretch;
+    justify-content: flex-start;
+    align-items: start;
     overflow-y: auto;
     scrollbar-color: var(--color-secondary) var(--color-accent);
     scrollbar-width: thin;
@@ -147,7 +147,11 @@ main {
     width: 100px;
     height: 100px;
 }
-
+.testClass {
+    width: 150px;
+    height: 200px;
+    background-color: aqua;
+}
 #table0 {
     top: 19%;
     left: 35%;
