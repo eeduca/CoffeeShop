@@ -8,15 +8,13 @@ body {
 
 :root {
     --color-primary: #303a42;
-    --color-secondary: #FFF2D7;
+    --color-secondary: #C9B194;
     --color-accent: #643843;
     --color-background: #3E3232;
     --color-text: #FFF2D7;
     --color-border: black;
 }
 
-/*#3E3232 #503C3C #7E6363 #A87C7C*/
-/*#FFF2D7 #643843 #303a42*/
 html, body {
     padding: 0;
     margin: 0;
@@ -71,12 +69,13 @@ aside {
     justify-content: space-between;
     gap: 0.5em;
     padding: 1em;
-    align-items: center;
+    align-items: stretch;
 }
 
-aside-bottom {
+.aside-bottom {
     display: flex;
     flex-direction: column;
+    justify-items: center;
     gap: 1em;
 }
 
@@ -85,13 +84,19 @@ aside-bottom {
     height: 2em;
 }
 
+#order-list {
+    text-align: left;
+}
+
 .print {
     background-color: var(--color-accent);
     border-radius: 1em;
-    border: solid 2px black;
+    border: solid 2px var(--color-border);
     padding: 1em 2em;
     color: var(--color-text);
     width: 22em;
+    text-align: center;
+    align-self: center;
 }
 
 .hidden {
@@ -141,17 +146,26 @@ main {
 
 .btn-table {
     border-radius: 50%;
-    border: 1px solid red;
+    border: 3px solid var(--color-secondary);
     background-color: transparent;
     position: absolute;
     width: 100px;
     height: 100px;
 }
-.testClass {
+
+.product-box {
     width: 150px;
-    height: 200px;
-    background-color: aqua;
+    height: 195px;
+    background-color: var(--color-accent);
+    border-radius: 1em;
+    border: solid 2px black;
+    /*padding: 1em;*/
+    color: var(--color-text);
+    align-content: center;
+    justify-items: center;
+    text-align: center;
 }
+
 #table0 {
     top: 19%;
     left: 35%;
