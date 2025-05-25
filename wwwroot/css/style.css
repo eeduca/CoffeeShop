@@ -18,7 +18,6 @@ body {
 html, body {
     padding: 0;
     margin: 0;
-    height: 100%;
 }
 
 button {
@@ -38,7 +37,7 @@ button {
 #container {
     background-color: var(--color-background);
     display: flex;
-    height: 100%;
+    min-height: 100vh;
     flex-direction: column;
     gap: 1em;
     padding: 1em;
@@ -56,7 +55,7 @@ nav {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    flex: 1 1 5em;
+    flex: 0 1 5em;
     height: 4em;
     gap: 1em;
     padding: 2em !important;
@@ -91,12 +90,22 @@ aside {
 .print {
     background-color: var(--color-accent);
     border-radius: 1em;
-    border: solid 2px var(--color-border);
+    /*border: solid 2px var(--color-border);*/
     padding: 1em 2em;
     color: var(--color-text);
     width: 22em;
     text-align: center;
     align-self: center;
+}
+.btn-add {
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    color: var(--color-text);
+    text-align: center;
+    align-self: center;
+    width: 1.2em;
+    height: 1.2em;
+    font-size: 1.2em;
 }
 
 .hidden {
@@ -104,16 +113,19 @@ aside {
 }
 
 main {
-    position: relative;
     flex: 1 1 100%;
     padding: 1em;
 }
 
 #screen-table {
-    background: url('/img/cafe_floor_plan.png') no-repeat 5% center;
-    background-size: contain;
-    width: 100%;
-    height: 500px;
+    position: relative;
+    /*background: url('/img/cafe_floor_plan.png') no-repeat center center;
+    background-size: contain;*/
+/*    width: 100%;*/
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #screen-menu {
@@ -128,13 +140,13 @@ main {
     scrollbar-color: var(--color-secondary) var(--color-accent);
     scrollbar-width: thin;
     width: 100%;
-    height: 500px;
+    max-height: calc(100vh - (1em + 1em + 1em + 1em + 1em + 1em + 4em));
 }
 
 .logo {
     flex: 0 1 auto;
     border-radius: 1em;
-    border: 2px solid var(--color-border);
+    /*border: 2px solid var(--color-border);*/
     padding: 1px 25px;
     background-color: var(--color-accent);
     font-size: 1.5rem;
@@ -145,53 +157,56 @@ main {
 }
 
 .btn-table {
+    --size: 10%;
+
     border-radius: 50%;
     border: 3px solid var(--color-secondary);
     background-color: transparent;
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: var(--size);
+    height: calc(var(--size) * (1019/609));
+
 }
 
 .product-box {
     width: 150px;
     height: 195px;
-    background-color: var(--color-accent);
+    background-color: var(--color-secondary);
     border-radius: 1em;
     border: solid 2px black;
     /*padding: 1em;*/
-    color: var(--color-text);
+    color: var(--color-accent);
     align-content: center;
     justify-items: center;
     text-align: center;
 }
 
 #table0 {
-    top: 19%;
-    left: 35%;
+    top: 12%;
+    left: 41%;
 }
 
 #table1 {
-    top: 55%;
-    left: 18%;
+    top: 57%;
+    left: 21%;
 }
 
 #table2 {
-    top: 68%;
-    left: 27%;
+    top: 73%;
+    left: 32%;
 }
 
 #table3 {
-    top: 46%;
-    left: 38%;
+    top: 49%;
+    left: 47%;
 }
 
 #table4 {
     top: 31%;
-    left: 47%;
+    left: 59%;
 }
 
 #table5 {
     top: 21%;
-    left: 58%;
+    left: 70%;
 }

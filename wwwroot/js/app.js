@@ -94,20 +94,20 @@ tables.forEach((table) => {
         if (tableId === -1) {
             return;
         }
-        else {
-            asideItems.innerHTML = ''; // Clear previous items
-            screenMenu.innerHTML = ''; // Clear previous items
-            console.log(tableId);
-            drawScreenMenu();
-            screenMenu.scrollTop = 0; // Reset scroll position
-            drawAsideItems(tableId);
-        }
+
+        asideItems.innerHTML = ''; // Clear previous items
+        screenMenu.innerHTML = ''; // Clear previous items
+        console.log(tableId);
+        drawScreenMenu();
+        drawAsideItems(tableId);
 
         screenTable.classList.add('hidden');
         screenMenu.classList.remove('hidden');
         btnBack.classList.remove('hidden');
         asideBottom.classList.remove('hidden');
         asideItems.classList.remove('hidden');
+
+        screenMenu.scrollTop = 0; // Reset scroll position
 
         //console.log('Table clicked:', event.target.getAttribute('data-table-id') ?? -1);
 
@@ -122,27 +122,34 @@ function drawScreenMenu() {
         productCard.classList.add('product-box');
         screenMenu.appendChild(productCard);
 
-        let productName = document.createElement('div');
-        productName.textContent = product.name;
-        productCard.appendChild(productName);
-
         let productImg = document.createElement('img');
         productImg.src = `https://${product.image}`;
         productImg.alt = product.name;
         productImg.width = 256;
-        productImg.height = 256; 
-        productImg.style.width = "100%";
+        productImg.height = 256;
+        productImg.style.width = "80%";
         productImg.style.height = "auto";
         productImg.style.display = "block";
+        productImg.style.borderRadius = "inherit";
         productCard.appendChild(productImg);
 
+        let productName = document.createElement('div');
+        productName.textContent = product.name;
+        productName.style.fontWeight = "bold";
+        productName.style.margin = "2px";
+        productCard.appendChild(productName);
+
         let itemPrice = document.createElement('div');
-        itemPrice.textContent = `${product.price} e`;
-        itemPrice.style.display = "inline";
+        itemPrice.textContent = `${product.price.toFixed(2)} €`;
+        itemPrice.style.display = "inline-block";
+        itemPrice.style.textAlign = "left";
+        itemPrice.style.width = "70px";
+        itemPrice.style.fontSize = "1.2em";
         productCard.appendChild(itemPrice);
 
         let btnAdd = document.createElement('button');
         btnAdd.textContent = '+';
+        btnAdd.classList.add('btn-add');
         productCard.appendChild(btnAdd);
     });
 }
@@ -152,19 +159,19 @@ function drawAsideItems(id) {
     let title = document.createElement('div');
     title.textContent = "Order List";
     title.textAlign = "center";
-    title.style.marginBottom ="1em";
+    title.style.marginBottom = "1em";
     asideItems.appendChild(title);
 
     orderList.forEach((orderItem) => {
         let orderItemBox = document.createElement('div');
-        orderItemBox.style.padding= "1em 1em 1em 0";
+        orderItemBox.style.padding = "1em 1em 1em 0";
         asideItems.appendChild(orderItemBox);
 
         let itemName = document.createElement('span');
         itemName.textContent = orderItem.productName;
         itemName.style.display = "inline-block";
         itemName.style.width = "33%";
-        itemName.style.textAlign= "left";
+        itemName.style.textAlign = "left";
         orderItemBox.appendChild(itemName);
 
         let itemQuantity = document.createElement('span');
