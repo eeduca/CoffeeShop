@@ -67,7 +67,6 @@ aside {
     flex: 0 0 25em;
     justify-content: space-between;
     gap: 0.5em;
-    padding: 1em;
     align-items: stretch;
 }
 
@@ -79,8 +78,12 @@ aside {
 }
 
 .order-items {
-    flex: 0 0 2em;
-    height: 2em;
+    flex: 0 0 calc(100vh - ((1em + 5em + 1em + 1em) + (1em + 5em + 1em + 1em)));
+    /*height: fit-content;*/
+    overflow-y: auto;
+    scrollbar-color: var(--color-secondary) var(--color-accent);
+    scrollbar-width: thin;
+    color: var(--color-text);
 }
 
 #order-list {
@@ -100,6 +103,17 @@ aside {
 .btn-add {
     background-color: var(--color-accent);
     border-radius: 50%;
+    color: var(--color-text);
+    text-align: center;
+    align-self: center;
+    width: 1.2em;
+    height: 1.2em;
+    font-size: 1.2em;
+}
+
+.btn-sub {
+    background-color: var(--color-accent);
+    border-radius: 22%;
     color: var(--color-text);
     text-align: center;
     align-self: center;
@@ -140,7 +154,7 @@ main {
     scrollbar-color: var(--color-secondary) var(--color-accent);
     scrollbar-width: thin;
     width: 100%;
-    max-height: calc(100vh - (1em + 1em + 1em + 1em + 1em + 1em + 4em));
+    max-height: calc(100vh - ((1.5em + 5em + 1em + 1em) + (1em + 1em)));
 }
 
 .logo {

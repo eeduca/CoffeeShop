@@ -44,7 +44,7 @@
     {
         id: 8,
         name: 'Caj',
-        price: 1.20,
+        price: 36.20,
         image: 'picsum.photos/256/256'
     },
     {
@@ -63,9 +63,39 @@
 
 const orderList = [
     {
-        quantity: 4,
-        price: 4.80,
+        quantity: 14,
+        price: 54.80,
         productName: "Caj"
+    },
+    {
+        quantity: 1,
+        price: 1.55,
+        productName: "Coca-Cola"
+    },
+    {
+        quantity: 2,
+        price: 3.60,
+        productName: "Sok"
+    },
+    {
+        quantity: 1,
+        price: 1.55,
+        productName: "Coca-Cola"
+    },
+    {
+        quantity: 2,
+        price: 3.60,
+        productName: "Sok"
+    },
+    {
+        quantity: 1,
+        price: 1.55,
+        productName: "Coca-Cola"
+    },
+    {
+        quantity: 2,
+        price: 3.60,
+        productName: "Sok"
     },
     {
         quantity: 1,
@@ -83,7 +113,7 @@ const orderList = [
 const screenTable = document.getElementById('screen-table');
 const screenMenu = document.getElementById('screen-menu');
 const screenAside = document.querySelector('aside');
-const asideItems = document.getElementById('order-list');
+const asideList = document.getElementById('order-list');
 const asideBottom = screenAside.querySelector(".aside-bottom")
 const tables = screenTable.querySelectorAll('.btn-table');
 const btnBack = document.getElementById('btn-back');
@@ -95,7 +125,7 @@ tables.forEach((table) => {
             return;
         }
 
-        asideItems.innerHTML = ''; // Clear previous items
+        asideList.innerHTML = ''; // Clear previous items
         screenMenu.innerHTML = ''; // Clear previous items
         console.log(tableId);
         drawScreenMenu();
@@ -105,9 +135,10 @@ tables.forEach((table) => {
         screenMenu.classList.remove('hidden');
         btnBack.classList.remove('hidden');
         asideBottom.classList.remove('hidden');
-        asideItems.classList.remove('hidden');
+        asideList.classList.remove('hidden');
 
         screenMenu.scrollTop = 0; // Reset scroll position
+        asideList.scrollTop = 0; // Reset scroll position
 
         //console.log('Table clicked:', event.target.getAttribute('data-table-id') ?? -1);
 
@@ -158,35 +189,47 @@ function drawAsideItems(id) {
 
     let title = document.createElement('div');
     title.textContent = "Order List";
-    title.textAlign = "center";
+    title.style.textAlign = "center";
+    title.style.fontWeight = "bold";
     title.style.marginBottom = "1em";
-    asideItems.appendChild(title);
+    asideList.appendChild(title);
 
     orderList.forEach((orderItem) => {
         let orderItemBox = document.createElement('div');
-        orderItemBox.style.padding = "1em 1em 1em 0";
-        asideItems.appendChild(orderItemBox);
+        orderItemBox.style.padding = "1em 0 0 0";
+        orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
+        asideList.appendChild(orderItemBox);
 
         let itemName = document.createElement('span');
         itemName.textContent = orderItem.productName;
         itemName.style.display = "inline-block";
-        itemName.style.width = "33%";
+        itemName.style.width = "40%";
         itemName.style.textAlign = "left";
         orderItemBox.appendChild(itemName);
 
         let itemQuantity = document.createElement('span');
         itemQuantity.textContent = orderItem.quantity;
-        itemName.style.display = "inline-block";
-        itemName.style.width = "33%";
-        itemName.style.textAlign = "center";
+        itemQuantity.style.display = "inline-block";
+        itemQuantity.style.width = "20%";
+        itemQuantity.style.textAlign = "center";
+        itemQuantity.style.border = "1px solid var(--color-text)";
         orderItemBox.appendChild(itemQuantity);
 
         let itemPrice = document.createElement('span');
-        itemPrice.textContent = `${orderItem.price} e`;
-        itemName.style.display = "inline-block";
-        itemName.style.width = "33%";
-        itemName.style.textAlign = "right";
+        itemPrice.textContent = `${orderItem.price.toFixed(2) } €`;
+        itemPrice.style.display = "inline-block";
+        itemPrice.style.width = "25%";
+        itemPrice.style.fontSize = "1.2em";
+        itemPrice.style.textAlign = "right";
         orderItemBox.appendChild(itemPrice);
+
+
+        let btnSub = document.createElement('button');
+        btnSub.textContent = '-';
+        btnSub.style.display = "inline-block";
+        btnSub.classList.add('btn-sub');
+        btnSub.style.marginLeft = "1em";
+        orderItemBox.appendChild(btnSub);
 
     });
 
@@ -199,5 +242,5 @@ btnBack.addEventListener('click', (event) => {
     screenMenu.classList.add('hidden');
     btnBack.classList.add('hidden');
     asideBottom.classList.add('hidden');
-    asideItems.classList.add('hidden');
+    asideList.classList.add('hidden');
 });
