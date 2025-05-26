@@ -148,99 +148,109 @@ tables.forEach((table) => {
 
 function drawScreenMenu() {
 
-    products.forEach((product) => {
-        let productCard = document.createElement('div');
-        productCard.classList.add('product-box');
-        screenMenu.appendChild(productCard);
+    fetch('api/CoffeeShop/GetProducts').then(response => {
+        if (!response.ok) {
+            throw new Error(response.status);
+        }
+        return response.json();
+    }).then(data => {
+        //console.log("Lista proizvoda: ", data);
 
-        let productImg = document.createElement('img');
-        productImg.src = `https://${product.image}`;
-        productImg.alt = product.name;
-        productImg.width = 256;
-        productImg.height = 256;
-        productImg.style.width = "80%";
-        productImg.style.height = "auto";
-        productImg.style.display = "block";
-        productImg.style.borderRadius = "inherit";
-        productCard.appendChild(productImg);
+        data.forEach((product) => {
+            let productCard = document.createElement('div');
+            productCard.classList.add('product-box');
+            screenMenu.appendChild(productCard);
 
-        let productName = document.createElement('div');
-        productName.textContent = product.name;
-        productName.style.fontWeight = "bold";
-        productName.style.margin = "2px";
-        productCard.appendChild(productName);
+            let productImg = document.createElement('img');
+            productImg.src = `https://${product.image}`;
+            productImg.alt = product.name;
+            productImg.width = 256;
+            productImg.height = 256;
+            productImg.style.width = "80%";
+            productImg.style.height = "auto";
+            productImg.style.display = "block";
+            productImg.style.borderRadius = "inherit";
+            productCard.appendChild(productImg);
 
-        let itemPrice = document.createElement('div');
-        itemPrice.textContent = `${product.price.toFixed(2)} €`;
-        itemPrice.style.display = "inline-block";
-        itemPrice.style.textAlign = "left";
-        itemPrice.style.width = "70px";
-        itemPrice.style.fontSize = "1.2em";
-        productCard.appendChild(itemPrice);
+            let productName = document.createElement('div');
+            productName.textContent = product.name;
+            productName.style.fontWeight = "bold";
+            productName.style.margin = "2px";
+            productCard.appendChild(productName);
 
-        let btnAdd = document.createElement('button');
-        btnAdd.textContent = '+';
-        btnAdd.classList.add('btn-add');
-        productCard.appendChild(btnAdd);
-    });
-}
+            let itemPrice = document.createElement('div');
+            itemPrice.textContent = `${product.price.toFixed(2)} €`;
+            itemPrice.style.display = "inline-block";
+            itemPrice.style.textAlign = "left";
+            itemPrice.style.width = "70px";
+            itemPrice.style.fontSize = "1.2em";
+            productCard.appendChild(itemPrice);
+
+            let btnAdd = document.createElement('button');
+            btnAdd.textContent = '+';
+            btnAdd.classList.add('btn-add');
+            productCard.appendChild(btnAdd);
+        });
+        });
+
+    }
 function drawAsideItems(id) {
 
 
-    let title = document.createElement('div');
-    title.textContent = "Order List";
-    title.style.textAlign = "center";
-    title.style.fontWeight = "bold";
-    title.style.marginBottom = "1em";
-    asideList.appendChild(title);
+            let title = document.createElement('div');
+            title.textContent = "Order List";
+            title.style.textAlign = "center";
+            title.style.fontWeight = "bold";
+            title.style.marginBottom = "1em";
+            asideList.appendChild(title);
 
-    orderList.forEach((orderItem) => {
-        let orderItemBox = document.createElement('div');
-        orderItemBox.style.padding = "1em 0 0 0";
-        orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
-        asideList.appendChild(orderItemBox);
+            orderList.forEach((orderItem) => {
+                let orderItemBox = document.createElement('div');
+                orderItemBox.style.padding = "1em 0 0 0";
+                orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
+                asideList.appendChild(orderItemBox);
 
-        let itemName = document.createElement('span');
-        itemName.textContent = orderItem.productName;
-        itemName.style.display = "inline-block";
-        itemName.style.width = "40%";
-        itemName.style.textAlign = "left";
-        orderItemBox.appendChild(itemName);
+                let itemName = document.createElement('span');
+                itemName.textContent = orderItem.productName;
+                itemName.style.display = "inline-block";
+                itemName.style.width = "40%";
+                itemName.style.textAlign = "left";
+                orderItemBox.appendChild(itemName);
 
-        let itemQuantity = document.createElement('span');
-        itemQuantity.textContent = orderItem.quantity;
-        itemQuantity.style.display = "inline-block";
-        itemQuantity.style.width = "20%";
-        itemQuantity.style.textAlign = "center";
-        itemQuantity.style.border = "1px solid var(--color-text)";
-        orderItemBox.appendChild(itemQuantity);
+                let itemQuantity = document.createElement('span');
+                itemQuantity.textContent = orderItem.quantity;
+                itemQuantity.style.display = "inline-block";
+                itemQuantity.style.width = "20%";
+                itemQuantity.style.textAlign = "center";
+                itemQuantity.style.border = "1px solid var(--color-text)";
+                orderItemBox.appendChild(itemQuantity);
 
-        let itemPrice = document.createElement('span');
-        itemPrice.textContent = `${orderItem.price.toFixed(2) } €`;
-        itemPrice.style.display = "inline-block";
-        itemPrice.style.width = "25%";
-        itemPrice.style.fontSize = "1.2em";
-        itemPrice.style.textAlign = "right";
-        orderItemBox.appendChild(itemPrice);
+                let itemPrice = document.createElement('span');
+                itemPrice.textContent = `${orderItem.price.toFixed(2)} €`;
+                itemPrice.style.display = "inline-block";
+                itemPrice.style.width = "25%";
+                itemPrice.style.fontSize = "1.2em";
+                itemPrice.style.textAlign = "right";
+                orderItemBox.appendChild(itemPrice);
 
 
-        let btnSub = document.createElement('button');
-        btnSub.textContent = '-';
-        btnSub.style.display = "inline-block";
-        btnSub.classList.add('btn-sub');
-        btnSub.style.marginLeft = "1em";
-        orderItemBox.appendChild(btnSub);
+                let btnSub = document.createElement('button');
+                btnSub.textContent = '-';
+                btnSub.style.display = "inline-block";
+                btnSub.classList.add('btn-sub');
+                btnSub.style.marginLeft = "1em";
+                orderItemBox.appendChild(btnSub);
 
-    });
+            });
 
-    //screenAsideItem
-    //console.log(id);   
-}
+            //screenAsideItem
+            //console.log(id);   
+        }
 
 btnBack.addEventListener('click', (event) => {
-    screenTable.classList.remove('hidden');
-    screenMenu.classList.add('hidden');
-    btnBack.classList.add('hidden');
-    asideBottom.classList.add('hidden');
-    asideList.classList.add('hidden');
-});
+            screenTable.classList.remove('hidden');
+            screenMenu.classList.add('hidden');
+            btnBack.classList.add('hidden');
+            asideBottom.classList.add('hidden');
+            asideList.classList.add('hidden');
+        });
