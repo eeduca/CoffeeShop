@@ -162,7 +162,7 @@ function drawScreenMenu() {
             screenMenu.appendChild(productCard);
 
             let productImg = document.createElement('img');
-            productImg.src = `https://${product.image}`;
+            productImg.src = `/img/${product.imageFileName}`;
             productImg.alt = product.name;
             productImg.width = 256;
             productImg.height = 256;
