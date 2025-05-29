@@ -120,16 +120,17 @@ const btnBack = document.getElementById('btn-back');
 
 tables.forEach((table) => {
     table.addEventListener('click', (event) => {
-        const tableId = Number(event.target.getAttribute('data-table-id') ?? -1);
-        if (tableId === -1) {
+        const tableNum = Number(event.target.getAttribute('data-table-id') ?? -1);
+        if (tableNum === -1) {
             return;
         }
 
         asideList.innerHTML = ''; // Clear previous items
         screenMenu.innerHTML = ''; // Clear previous items
-        console.log(tableId);
+        console.log(tableNum);
         drawScreenMenu();
-        drawAsideItems(tableId);
+        isOccupied(tableNum);
+        //drawAsideItems(tableNum);
 
         screenTable.classList.add('hidden');
         screenMenu.classList.remove('hidden');
@@ -191,66 +192,175 @@ function drawScreenMenu() {
             btnAdd.classList.add('btn-add');
             productCard.appendChild(btnAdd);
         });
-        });
+    });
 
+}
+function drawAsideItems(tableNum) {
+
+    //console.log(`Broj stola app.js : ${tableNum}`);
+    if (tableNum > 5 || tableNum < 0) {
+        throw new Error("Table number not valid!");
     }
-function drawAsideItems(id) {
 
-
-            let title = document.createElement('div');
-            title.textContent = "Order List";
-            title.style.textAlign = "center";
-            title.style.fontWeight = "bold";
-            title.style.marginBottom = "1em";
-            asideList.appendChild(title);
-
-            orderList.forEach((orderItem) => {
-                let orderItemBox = document.createElement('div');
-                orderItemBox.style.padding = "1em 0 0 0";
-                orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
-                asideList.appendChild(orderItemBox);
-
-                let itemName = document.createElement('span');
-                itemName.textContent = orderItem.productName;
-                itemName.style.display = "inline-block";
-                itemName.style.width = "40%";
-                itemName.style.textAlign = "left";
-                orderItemBox.appendChild(itemName);
-
-                let itemQuantity = document.createElement('span');
-                itemQuantity.textContent = orderItem.quantity;
-                itemQuantity.style.display = "inline-block";
-                itemQuantity.style.width = "20%";
-                itemQuantity.style.textAlign = "center";
-                itemQuantity.style.border = "1px solid var(--color-text)";
-                orderItemBox.appendChild(itemQuantity);
-
-                let itemPrice = document.createElement('span');
-                itemPrice.textContent = `${orderItem.price.toFixed(2)} €`;
-                itemPrice.style.display = "inline-block";
-                itemPrice.style.width = "25%";
-                itemPrice.style.fontSize = "1.2em";
-                itemPrice.style.textAlign = "right";
-                orderItemBox.appendChild(itemPrice);
-
-
-                let btnSub = document.createElement('button');
-                btnSub.textContent = '-';
-                btnSub.style.display = "inline-block";
-                btnSub.classList.add('btn-sub');
-                btnSub.style.marginLeft = "1em";
-                orderItemBox.appendChild(btnSub);
-
-            });
-
-            //screenAsideItem
-            //console.log(id);   
+    fetch(`api/CoffeeShop/GetOrder/${tableNum}`).then(response => {
+        if (!response.ok) {
+            throw new Error(error.message);
         }
+        if (response == null) throw new Error("Error! Table doesn't have orderId!");
+        return response.json();
+    }).then(data => {
+
+        let title = document.createElement('div');
+        title.textContent = "Order List";
+        title.style.textAlign = "center";
+        title.style.fontWeight = "bold";
+        title.style.marginBottom = "1em";
+        asideList.appendChild(title);
+
+        //data.forEach((orderItem) => {
+        //    let orderItemBox = document.createElement('div');
+        //    orderItemBox.style.padding = "1em 0 0 0";
+        //    orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
+        //    asideList.appendChild(orderItemBox);
+
+        //    let itemName = document.createElement('span');
+        //    itemName.textContent = orderItem.productName;
+        //    itemName.style.display = "inline-block";
+        //    itemName.style.width = "40%";
+        //    itemName.style.textAlign = "left";
+        //    orderItemBox.appendChild(itemName);
+
+        //    let itemQuantity = document.createElement('span');
+        //    itemQuantity.textContent = orderItem.quantity;
+        //    itemQuantity.style.display = "inline-block";
+        //    itemQuantity.style.width = "20%";
+        //    itemQuantity.style.textAlign = "center";
+        //    itemQuantity.style.border = "1px solid var(--color-text)";
+        //    orderItemBox.appendChild(itemQuantity);
+
+        //    let itemPrice = document.createElement('span');
+        //    itemPrice.textContent = `${orderItem.price.toFixed(2)} €`;
+        //    itemPrice.style.display = "inline-block";
+        //    itemPrice.style.width = "25%";
+        //    itemPrice.style.fontSize = "1.2em";
+        //    itemPrice.style.textAlign = "right";
+        //    orderItemBox.appendChild(itemPrice);
+
+
+        //    let btnSub = document.createElement('button');
+        //    btnSub.textContent = '-';
+        //    btnSub.style.display = "inline-block";
+        //    btnSub.classList.add('btn-sub');
+        //    btnSub.style.marginLeft = "1em";
+        //    orderItemBox.appendChild(btnSub);
+        //}
+        })
+        .catch(error => {
+            alert(error.message);  // Prikazuje "Nema aktivne porudžbine za dati sto."
+        });
+}
+function isOccupied(tableNum) {
+
+    fetch(`api/CoffeeShop/IsOccupied/${tableNum}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Došlo je do greške");
+            }
+            return response.json(); // ovo će biti true ili false
+        })
+        .then(result => {
+            if (result === false) {
+                //The table is not occupied, you can proceed to create a new order
+                createNewOrder(tableNum);
+                return;
+            }
+        })
+        .catch(error => {
+            console.error("Error in fetch function.", error);
+        });
+}
+
+function createNewOrder(tableNum) {
+    fetch('api/CoffeeShop/CreateOrder', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ tableNumber: tableNum }) // Replace with the actual table number
+    }).then(response => {
+        if (!response.ok) Error("Error in createNewOrder response is not ok");
+        else { console.log("createNewOrder is ok!")}
+    });
+}
+//fetch(`api/CoffeeShop/GetOrder`, {
+//    method: "GET",
+//    headers: {
+//        "Content-Type": "application/json"
+//    },
+//    body: JSON.stringify({ tableNumber: tableNum })
+//}).then(response => {
+//    if (!response.ok) {
+//        throw new Error("Error app.js response nije ok");
+//    }
+
+//    return response.json();
+//}).then(data => {
+//    console.log("Order: ", data)
+//});
+//let title = document.createElement('div');
+//title.textContent = "Order List";
+//title.style.textAlign = "center";
+//title.style.fontWeight = "bold";
+//title.style.marginBottom = "1em";
+//asideList.appendChild(title);
+
+//orderList.forEach((orderItem) => {
+//    let orderItemBox = document.createElement('div');
+//    orderItemBox.style.padding = "1em 0 0 0";
+//    orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
+//    asideList.appendChild(orderItemBox);
+
+//    let itemName = document.createElement('span');
+//    itemName.textContent = orderItem.productName;
+//    itemName.style.display = "inline-block";
+//    itemName.style.width = "40%";
+//    itemName.style.textAlign = "left";
+//    orderItemBox.appendChild(itemName);
+
+//    let itemQuantity = document.createElement('span');
+//    itemQuantity.textContent = orderItem.quantity;
+//    itemQuantity.style.display = "inline-block";
+//    itemQuantity.style.width = "20%";
+//    itemQuantity.style.textAlign = "center";
+//    itemQuantity.style.border = "1px solid var(--color-text)";
+//    orderItemBox.appendChild(itemQuantity);
+
+//    let itemPrice = document.createElement('span');
+//    itemPrice.textContent = `${orderItem.price.toFixed(2)} €`;
+//    itemPrice.style.display = "inline-block";
+//    itemPrice.style.width = "25%";
+//    itemPrice.style.fontSize = "1.2em";
+//    itemPrice.style.textAlign = "right";
+//    orderItemBox.appendChild(itemPrice);
+
+
+//    let btnSub = document.createElement('button');
+//    btnSub.textContent = '-';
+//    btnSub.style.display = "inline-block";
+//    btnSub.classList.add('btn-sub');
+//    btnSub.style.marginLeft = "1em";
+//    orderItemBox.appendChild(btnSub);
+
+//});
+
+//screenAsideItem
+//console.log(id);   
+
 
 btnBack.addEventListener('click', (event) => {
-            screenTable.classList.remove('hidden');
-            screenMenu.classList.add('hidden');
-            btnBack.classList.add('hidden');
-            asideBottom.classList.add('hidden');
-            asideList.classList.add('hidden');
-        });
+    screenTable.classList.remove('hidden');
+    screenMenu.classList.add('hidden');
+    btnBack.classList.add('hidden');
+    asideBottom.classList.add('hidden');
+    asideList.classList.add('hidden');
+});

@@ -3,17 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using CoffeeShop.Models;
 using CoffeeShop.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CoffeeShop.Controllers
 {
-        public class OrderDto
+    public class OrderDto
     {
         public int Id { get; set; }
         public double Tip { get; set; }
-        public DateTime TimeOfPayment { get; set; }
-
-        //Navigation properties
-        public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public DateTime? TimeOfPayment { get; set; }
+        public int TableNumber { get; set; }
     }
 
     public class ProductDto
@@ -21,8 +20,7 @@ namespace CoffeeShop.Controllers
         public int Id { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }
-        public bool IsActive { get; set; } = true;
-        public string ImageFileName { get; set; }
+        public bool IsActive { get; set; }
     }
 
     public class OrderItemDto
@@ -31,17 +29,13 @@ namespace CoffeeShop.Controllers
         public int Quantity { get; set; }
         public decimal Discount { get; set; }
         public decimal TotPrice { get; set; }
-        public string ProductName { get; set; } //From Product.Name
-        public double UnitPrice { get; set; } //From Product.Price
-
-        //Foreign key
-        public Order Order { get; set; }
-        public int OrderId { get; set; } //From Order.Id
-        public Product Product { get; set; }
-        public int ProductId { get; set; } //From Product.Id
+        public string ProductName { get; set; }
+        public double UnitPrice { get; set; }
+        public int OrderId { get; set; }
+        public int ProductId { get; set; }
 
     }
-    
+
     [Route("api/[controller]")]
     [ApiController]
     public class CoffeeShopController : ControllerBase
@@ -54,8 +48,64 @@ namespace CoffeeShop.Controllers
         [HttpGet("GetProducts")]
         public IActionResult GetProducts()
         {
-            var products = _context.Products.ToList();
+            var products = _context.Products
+                .Where(p => p.IsActive)
+                .ToList();
             return Ok(products);
+        }
+
+        [HttpGet("GetOrder/{tableNum}")]
+        public IActionResult GetOrder(int tableNum)
+        {
+            var order = _context.Orders
+                .Where(o => o.TableNumber == tableNum && o.TimeOfPayment == null)
+                .FirstOrDefault();
+            if (order == null)
+            {
+                return Ok(null);
+            }
+            return Ok(order.Id);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrderItem([FromBody] OrderItem orderItem)
+        {
+
+            if (ModelState.IsValid)
+            {
+                _context.OrderItems.Add(orderItem);
+                await _context.SaveChangesAsync();
+                return Ok(orderItem);
+            }
+            return BadRequest("Invalid order item data.");
+        }
+
+        [HttpPost ("CreateOrder")]
+        public async Task<IActionResult> CreateOrder([FromBody] OrderDto order)
+        {
+            var newOrder = new Order
+            {
+                TimeCreated = DateTime.Now,
+                TableNumber = order.TableNumber,
+                Tip = 0.00
+            };
+
+            if (ModelState.IsValid)
+            {
+                _context.Orders.Add(newOrder);
+                await _context.SaveChangesAsync();
+                return Ok(newOrder);
+            }
+            return BadRequest("Invalid order item data.");
+        }
+
+        [HttpGet("IsOccupied/{tableNum}")]
+        public IActionResult IsOccupied(int tableNum)
+        {
+            bool isOccupied = _context.Orders
+                .Where(o => o.TableNumber == tableNum && o.TimeOfPayment == null)
+                .Any();
+            return Ok(isOccupied);
         }
     }
 }
