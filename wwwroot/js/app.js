@@ -130,7 +130,7 @@ tables.forEach((table) => {
         console.log(tableNum);
         drawScreenMenu();
         isOccupied(tableNum);
-        //drawAsideItems(tableNum);
+        drawAsideItems(tableNum);
 
         screenTable.classList.add('hidden');
         screenMenu.classList.remove('hidden');
@@ -195,20 +195,12 @@ function drawScreenMenu() {
     });
 
 }
-function drawAsideItems(tableNum) {
 
-    //console.log(`Broj stola app.js : ${tableNum}`);
-    if (tableNum > 5 || tableNum < 0) {
-        throw new Error("Table number not valid!");
-    }
+async function drawAsideItems(tableNum) {
+    const orderId = await getOrderId(tableNum);
 
-    fetch(`api/CoffeeShop/GetOrder/${tableNum}`).then(response => {
-        if (!response.ok) {
-            throw new Error(error.message);
-        }
-        if (response == null) throw new Error("Error! Table doesn't have orderId!");
-        return response.json();
-    }).then(data => {
+    if (orderId !== null) {
+        //console.log(`Za sto ${tableNum} aktivna porudžbina ima ID: ${orderId}`);
 
         let title = document.createElement('div');
         title.textContent = "Order List";
@@ -217,48 +209,69 @@ function drawAsideItems(tableNum) {
         title.style.marginBottom = "1em";
         asideList.appendChild(title);
 
-        //data.forEach((orderItem) => {
-        //    let orderItemBox = document.createElement('div');
-        //    orderItemBox.style.padding = "1em 0 0 0";
-        //    orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
-        //    asideList.appendChild(orderItemBox);
+        fetch(`api/CoffeeShop/GetOrderItems/${orderId}`).then(response => {
+            if (!response.ok) {
+                throw new Error(response.status);
+            }
+            return response.json();
+        }).then(data => {
+            data.forEach((orderItem) => {
+                let orderItemBox = document.createElement('div');
+                orderItemBox.style.padding = "1em 0 0 0";
+                orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
+                asideList.appendChild(orderItemBox);
 
-        //    let itemName = document.createElement('span');
-        //    itemName.textContent = orderItem.productName;
-        //    itemName.style.display = "inline-block";
-        //    itemName.style.width = "40%";
-        //    itemName.style.textAlign = "left";
-        //    orderItemBox.appendChild(itemName);
+                let itemName = document.createElement('span');
+                itemName.textContent = orderItem.productName;
+                itemName.style.display = "inline-block";
+                itemName.style.width = "40%";
+                itemName.style.textAlign = "left";
+                orderItemBox.appendChild(itemName);
 
-        //    let itemQuantity = document.createElement('span');
-        //    itemQuantity.textContent = orderItem.quantity;
-        //    itemQuantity.style.display = "inline-block";
-        //    itemQuantity.style.width = "20%";
-        //    itemQuantity.style.textAlign = "center";
-        //    itemQuantity.style.border = "1px solid var(--color-text)";
-        //    orderItemBox.appendChild(itemQuantity);
+                let itemQuantity = document.createElement('span');
+                itemQuantity.textContent = orderItem.quantity;
+                itemQuantity.style.display = "inline-block";
+                itemQuantity.style.width = "20%";
+                itemQuantity.style.textAlign = "center";
+                itemQuantity.style.border = "1px solid var(--color-text)";
+                orderItemBox.appendChild(itemQuantity);
 
-        //    let itemPrice = document.createElement('span');
-        //    itemPrice.textContent = `${orderItem.price.toFixed(2)} €`;
-        //    itemPrice.style.display = "inline-block";
-        //    itemPrice.style.width = "25%";
-        //    itemPrice.style.fontSize = "1.2em";
-        //    itemPrice.style.textAlign = "right";
-        //    orderItemBox.appendChild(itemPrice);
+                let itemPrice = document.createElement('span');
+                itemPrice.textContent = `${orderItem.price.toFixed(2)} €`;
+                itemPrice.style.display = "inline-block";
+                itemPrice.style.width = "25%";
+                itemPrice.style.fontSize = "1.2em";
+                itemPrice.style.textAlign = "right";
+                orderItemBox.appendChild(itemPrice);
 
 
-        //    let btnSub = document.createElement('button');
-        //    btnSub.textContent = '-';
-        //    btnSub.style.display = "inline-block";
-        //    btnSub.classList.add('btn-sub');
-        //    btnSub.style.marginLeft = "1em";
-        //    orderItemBox.appendChild(btnSub);
-        //}
-        })
-        .catch(error => {
-            alert(error.message);  // Prikazuje "Nema aktivne porudžbine za dati sto."
+                let btnSub = document.createElement('button');
+                btnSub.textContent = '-';
+                btnSub.style.display = "inline-block";
+                btnSub.classList.add('btn-sub');
+                btnSub.style.marginLeft = "1em";
+                orderItemBox.appendChild(btnSub);
+            })
         });
+    }
+    else {
+        console.log(`Nema aktivne porudžbine za sto ${tableNum}`);
+    }
 }
+
+async function getOrderId(tableNum) {
+    try {
+        const response = await fetch(`/api/CoffeeShop/GetOrderId/${tableNum}`);
+        const orderId = await response.json();
+        return orderId;
+    }
+    catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+
 function isOccupied(tableNum) {
 
     fetch(`api/CoffeeShop/IsOccupied/${tableNum}`)
@@ -289,73 +302,18 @@ function createNewOrder(tableNum) {
         body: JSON.stringify({ tableNumber: tableNum }) // Replace with the actual table number
     }).then(response => {
         if (!response.ok) Error("Error in createNewOrder response is not ok");
-        else { console.log("createNewOrder is ok!")}
+        else { console.log("createNewOrder is ok!") }
     });
 }
-//fetch(`api/CoffeeShop/GetOrder`, {
-//    method: "GET",
-//    headers: {
-//        "Content-Type": "application/json"
-//    },
-//    body: JSON.stringify({ tableNumber: tableNum })
-//}).then(response => {
-//    if (!response.ok) {
-//        throw new Error("Error app.js response nije ok");
-//    }
-
-//    return response.json();
-//}).then(data => {
-//    console.log("Order: ", data)
-//});
-//let title = document.createElement('div');
-//title.textContent = "Order List";
-//title.style.textAlign = "center";
-//title.style.fontWeight = "bold";
-//title.style.marginBottom = "1em";
-//asideList.appendChild(title);
-
-//orderList.forEach((orderItem) => {
-//    let orderItemBox = document.createElement('div');
-//    orderItemBox.style.padding = "1em 0 0 0";
-//    orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
-//    asideList.appendChild(orderItemBox);
-
-//    let itemName = document.createElement('span');
-//    itemName.textContent = orderItem.productName;
-//    itemName.style.display = "inline-block";
-//    itemName.style.width = "40%";
-//    itemName.style.textAlign = "left";
-//    orderItemBox.appendChild(itemName);
-
-//    let itemQuantity = document.createElement('span');
-//    itemQuantity.textContent = orderItem.quantity;
-//    itemQuantity.style.display = "inline-block";
-//    itemQuantity.style.width = "20%";
-//    itemQuantity.style.textAlign = "center";
-//    itemQuantity.style.border = "1px solid var(--color-text)";
-//    orderItemBox.appendChild(itemQuantity);
-
-//    let itemPrice = document.createElement('span');
-//    itemPrice.textContent = `${orderItem.price.toFixed(2)} €`;
-//    itemPrice.style.display = "inline-block";
-//    itemPrice.style.width = "25%";
-//    itemPrice.style.fontSize = "1.2em";
-//    itemPrice.style.textAlign = "right";
-//    orderItemBox.appendChild(itemPrice);
 
 
-//    let btnSub = document.createElement('button');
-//    btnSub.textContent = '-';
-//    btnSub.style.display = "inline-block";
-//    btnSub.classList.add('btn-sub');
-//    btnSub.style.marginLeft = "1em";
-//    orderItemBox.appendChild(btnSub);
+async function addOrderItem(tableNum) {
+    const orderId = await getOrderId(tableNum);
 
-//});
 
-//screenAsideItem
-//console.log(id);   
-
+}
+btnAdd.addEventListener('click', (event) => {
+});
 
 btnBack.addEventListener('click', (event) => {
     screenTable.classList.remove('hidden');

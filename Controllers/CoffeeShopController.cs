@@ -45,40 +45,48 @@ namespace CoffeeShop.Controllers
         {
             _context = context;
         }
+
         [HttpGet("GetProducts")]
-        public IActionResult GetProducts()
+        public async Task<IActionResult> GetProducts()
         {
-            var products = _context.Products
+            var products = await _context.Products
                 .Where(p => p.IsActive)
-                .ToList();
+                .ToListAsync();
             return Ok(products);
         }
 
-        [HttpGet("GetOrder/{tableNum}")]
-        public IActionResult GetOrder(int tableNum)
+        [HttpGet("GetOrderItems/{orderId}")]
+        public async Task<IActionResult> GetOrderItems(int orderId)
         {
-            var order = _context.Orders
-                .Where(o => o.TableNumber == tableNum && o.TimeOfPayment == null)
-                .FirstOrDefault();
-            if (order == null)
-            {
-                return Ok(null);
-            }
+            var orderItems = await _context.OrderItems
+                .Where(o => o.OrderId == orderId)
+                .ToListAsync();
+            return Ok(orderItems);
+
+        }
+
+        [HttpGet("GetOrderId/{tableNum}")]
+        public async Task<ActionResult> GetOrderId(int tableNum)
+        {
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.TableNumber == tableNum && o.TimeOfPayment == null);
+
+            if (order == null) return Ok(); 
+
             return Ok(order.Id);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddOrderItem([FromBody] OrderItem orderItem)
-        {
-
-            if (ModelState.IsValid)
-            {
-                _context.OrderItems.Add(orderItem);
-                await _context.SaveChangesAsync();
-                return Ok(orderItem);
-            }
-            return BadRequest("Invalid order item data.");
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> AddOrderItem([FromBody] OrderItem orderItem)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.OrderItems.Add(orderItem);
+        //        await _context.SaveChangesAsync();
+        //        return Ok(orderItem);
+        //    }
+        //    return BadRequest("Invalid order item data.");
+        //}
 
         [HttpPost ("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto order)
@@ -100,11 +108,11 @@ namespace CoffeeShop.Controllers
         }
 
         [HttpGet("IsOccupied/{tableNum}")]
-        public IActionResult IsOccupied(int tableNum)
+        public async Task<IActionResult> IsOccupied(int tableNum)
         {
-            bool isOccupied = _context.Orders
+            bool isOccupied = await _context.Orders
                 .Where(o => o.TableNumber == tableNum && o.TimeOfPayment == null)
-                .Any();
+                .AnyAsync();
             return Ok(isOccupied);
         }
     }
