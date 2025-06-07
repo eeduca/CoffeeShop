@@ -15,14 +15,6 @@ namespace CoffeeShop.Controllers
         public int TableNumber { get; set; }
     }
 
-    public class ProductDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public double Price { get; set; }
-        public bool IsActive { get; set; }
-    }
-
     public class OrderItemDto
     {
         public int Id { get; set; }
@@ -76,17 +68,28 @@ namespace CoffeeShop.Controllers
             return Ok(order.Id);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> AddOrderItem([FromBody] OrderItem orderItem)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.OrderItems.Add(orderItem);
-        //        await _context.SaveChangesAsync();
-        //        return Ok(orderItem);
-        //    }
-        //    return BadRequest("Invalid order item data.");
-        //}
+        [HttpPost ("AddOrderItem")]
+        public async Task<IActionResult> AddOrderItem([FromBody] OrderItemDto orderItem)????
+        {
+             var newOrderItem = new OrderItem
+            {
+                 Quantity = orderItem.Quantity,
+                 Discount = 1,
+                 TotPrice = 0,
+                 ProductName = orderItem.ProductName,
+                 UnitPrice = orderItem.UnitPrice,
+                 OrderId = orderItem.OrderId,
+                 ProductId = orderItem.ProductId
+             };
+
+            if (ModelState.IsValid)
+            {
+                _context.OrderItems.Add(newOrderItem);
+                await _context.SaveChangesAsync();
+                return Ok(newOrderItem);
+            }
+            return BadRequest("Invalid order item data.");
+        }
 
         [HttpPost ("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto order)

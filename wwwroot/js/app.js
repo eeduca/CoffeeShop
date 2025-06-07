@@ -128,7 +128,7 @@ tables.forEach((table) => {
         asideList.innerHTML = ''; // Clear previous items
         screenMenu.innerHTML = ''; // Clear previous items
         console.log(tableNum);
-        drawScreenMenu();
+        drawScreenMenu(tableNum);
         isOccupied(tableNum);
         drawAsideItems(tableNum);
 
@@ -147,7 +147,7 @@ tables.forEach((table) => {
     });
 });
 
-function drawScreenMenu() {
+function drawScreenMenu(tableNum) {
 
     fetch('api/CoffeeShop/GetProducts').then(response => {
         if (!response.ok) {
@@ -190,6 +190,9 @@ function drawScreenMenu() {
             let btnAdd = document.createElement('button');
             btnAdd.textContent = '+';
             btnAdd.classList.add('btn-add');
+            btnAdd.setAttribute('product-id', `${product.id}`);
+            btnAdd.setAttribute('table-num', `${tableNum}`);
+
             productCard.appendChild(btnAdd);
         });
     });
@@ -259,17 +262,17 @@ async function drawAsideItems(tableNum) {
     }
 }
 
-async function getOrderId(tableNum) {
-    try {
-        const response = await fetch(`/api/CoffeeShop/GetOrderId/${tableNum}`);
-        const orderId = await response.json();
-        return orderId;
-    }
-    catch (error) {
-        console.error(error);
-        return null;
-    }
-}
+//async function getOrderId(tableNum) {
+//    try {
+//        const response = await fetch(`/api/CoffeeShop/GetOrderId/${tableNum}`);
+//        const orderId = await response.json();
+//        return orderId;
+//    }
+//    catch (error) {
+//        console.error(error);
+//        return null;
+//    }
+//}
 
 
 function isOccupied(tableNum) {
@@ -307,12 +310,30 @@ function createNewOrder(tableNum) {
 }
 
 
-async function addOrderItem(tableNum) {
-    const orderId = await getOrderId(tableNum);
+async function addOrderItem(tableNum) { ??????
+    const tableOrderId = await getOrderId(tableNum);
 
+    fetch('api/CoffeeShop/AddOrderItem', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ quantity: 1, orderId: tableOrderId,  }) 
+    }).then(response => {
+        if (!response.ok) Error("Error in createNewOrder response is not ok");
+        else { console.log("createNewOrder is ok!") }
+    });
 
 }
-btnAdd.addEventListener('click', (event) => {
+
+ btnAdd.addEventListener('click', (event) => {
+    const tableNum = Number(event.target.getAttribute('table-num') ?? -1);
+    const productId = Number(event.target.getAttribute('product-id') ?? -1);
+    if (tableNum === -1 || productId === -1) {
+        return;
+    }
+    addOrderItem(tableNum);
+
 });
 
 btnBack.addEventListener('click', (event) => {
