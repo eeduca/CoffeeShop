@@ -27,6 +27,12 @@ namespace CoffeeShop.Controllers
         public int ProductId { get; set; }
 
     }
+    public class addOrderItemDto
+    {
+        public int TableNum { get; set; }
+        public int ProductId { get; set; }
+
+    }
 
     [Route("api/[controller]")]
     [ApiController]
@@ -47,51 +53,70 @@ namespace CoffeeShop.Controllers
             return Ok(products);
         }
 
-        [HttpGet("GetOrderItems/{orderId}")]
-        public async Task<IActionResult> GetOrderItems(int orderId)
+        [HttpGet("GetOrderItems/{tableNum}")]
+        public async Task<IActionResult> GetOrderItems(int tableNum)
         {
+            int orderId = GetOrderId(tableNum).Result; //??? da li treba da napisem await?
+
             var orderItems = await _context.OrderItems
-                .Where(o => o.OrderId == orderId)
+                .Select(o => new {
+                    o.ProductName,
+                    o.UnitPrice,
+                    o.OrderId
+                })
+                .Where(o => o.OrderId == orderId)//?? da li ce ovo (orderId.Result) vratiti int?
                 .ToListAsync();
             return Ok(orderItems);
 
         }
 
+
+        /// <summary>
+        /// Method <c>GetOrderId</c> returns -1 if there is no order for specified table number.
+        /// </summary>
         [HttpGet("GetOrderId/{tableNum}")]
-        public async Task<ActionResult> GetOrderId(int tableNum)
+        public async Task<int> GetOrderId(int tableNum) //kako da vratim int, a ne IActionResult?
         {
             var order = await _context.Orders
                 .FirstOrDefaultAsync(o => o.TableNumber == tableNum && o.TimeOfPayment == null);
-
-            if (order == null) return Ok(); 
-
-            return Ok(order.Id);
+            if (order == null) return -1; // Return -1 if no active order is found
+            return order.Id;
         }
 
-        [HttpPost ("AddOrderItem")]
-        public async Task<IActionResult> AddOrderItem([FromBody] OrderItemDto orderItem)????
+        [HttpPost("AddOrderItem")]
+        public async Task<IActionResult> AddOrderItem([FromBody] addOrderItemDto addOrderItem)
         {
-             var newOrderItem = new OrderItem
+            var orderId = GetOrderId(addOrderItem.TableNum);
+            if (orderId.Result == -1)
             {
-                 Quantity = orderItem.Quantity,
-                 Discount = 1,
-                 TotPrice = 0,
-                 ProductName = orderItem.ProductName,
-                 UnitPrice = orderItem.UnitPrice,
-                 OrderId = orderItem.OrderId,
-                 ProductId = orderItem.ProductId
-             };
+                return BadRequest("No active order found for the specified table number.");
+            }
+            
+            var productItem = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == addOrderItem.ProductId && p.IsActive);
+            if (productItem== null)
+            {
+                return BadRequest("Product not found or is inactive.");
+            }
+
+            var newOrderItem = new OrderItem
+            {
+                ProductName = productItem.Name,
+                UnitPrice = productItem.Price,
+                OrderId = orderId.Result,
+                ProductId = productItem.Id,
+            };
 
             if (ModelState.IsValid)
             {
                 _context.OrderItems.Add(newOrderItem);
                 await _context.SaveChangesAsync();
                 return Ok(newOrderItem);
-            }
+    }
             return BadRequest("Invalid order item data.");
-        }
+}
 
-        [HttpPost ("CreateOrder")]
+[HttpPost ("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto order)
         {
             var newOrder = new Order
@@ -114,6 +139,11 @@ namespace CoffeeShop.Controllers
         public async Task<IActionResult> IsOccupied(int tableNum)
         {
             bool isOccupied = await _context.Orders
+                .Select(o => new
+                {
+                    o.TableNumber,
+                    o.TimeOfPayment
+                })
                 .Where(o => o.TableNumber == tableNum && o.TimeOfPayment == null)
                 .AnyAsync();
             return Ok(isOccupied);

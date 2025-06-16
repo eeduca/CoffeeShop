@@ -117,6 +117,7 @@ const asideList = document.getElementById('order-list');
 const asideBottom = screenAside.querySelector(".aside-bottom")
 const tables = screenTable.querySelectorAll('.btn-table');
 const btnBack = document.getElementById('btn-back');
+const btnAdd = document.querySelectorAll('.btn-add');
 
 tables.forEach((table) => {
     table.addEventListener('click', (event) => {
@@ -127,7 +128,7 @@ tables.forEach((table) => {
 
         asideList.innerHTML = ''; // Clear previous items
         screenMenu.innerHTML = ''; // Clear previous items
-        console.log(tableNum);
+        //console.log(tableNum);
         drawScreenMenu(tableNum);
         isOccupied(tableNum);
         drawAsideItems(tableNum);
@@ -190,21 +191,19 @@ function drawScreenMenu(tableNum) {
             let btnAdd = document.createElement('button');
             btnAdd.textContent = '+';
             btnAdd.classList.add('btn-add');
-            btnAdd.setAttribute('product-id', `${product.id}`);
-            btnAdd.setAttribute('table-num', `${tableNum}`);
-
+            btnAdd.onclick = event => {
+                addOrderItem(product.id, tableNum);
+            };
             productCard.appendChild(btnAdd);
-        });
-    });
 
-}
+           
+            });
+        });
+    };
+
 
 async function drawAsideItems(tableNum) {
-    const orderId = await getOrderId(tableNum);
-
-    if (orderId !== null) {
-        //console.log(`Za sto ${tableNum} aktivna porudžbina ima ID: ${orderId}`);
-
+   
         let title = document.createElement('div');
         title.textContent = "Order List";
         title.style.textAlign = "center";
@@ -212,7 +211,7 @@ async function drawAsideItems(tableNum) {
         title.style.marginBottom = "1em";
         asideList.appendChild(title);
 
-        fetch(`api/CoffeeShop/GetOrderItems/${orderId}`).then(response => {
+    fetch(`api/CoffeeShop/GetOrderItems/${tableNum}`).then(response => {
             if (!response.ok) {
                 throw new Error(response.status);
             }
@@ -232,7 +231,7 @@ async function drawAsideItems(tableNum) {
                 orderItemBox.appendChild(itemName);
 
                 let itemQuantity = document.createElement('span');
-                itemQuantity.textContent = orderItem.quantity;
+                itemQuantity.textContent = "1";
                 itemQuantity.style.display = "inline-block";
                 itemQuantity.style.width = "20%";
                 itemQuantity.style.textAlign = "center";
@@ -240,7 +239,7 @@ async function drawAsideItems(tableNum) {
                 orderItemBox.appendChild(itemQuantity);
 
                 let itemPrice = document.createElement('span');
-                itemPrice.textContent = `${orderItem.price.toFixed(2)} €`;
+                itemPrice.textContent = `${orderItem.unitPrice.toFixed(2)} €`;
                 itemPrice.style.display = "inline-block";
                 itemPrice.style.width = "25%";
                 itemPrice.style.fontSize = "1.2em";
@@ -255,12 +254,9 @@ async function drawAsideItems(tableNum) {
                 btnSub.style.marginLeft = "1em";
                 orderItemBox.appendChild(btnSub);
             })
-        });
+       });
     }
-    else {
-        console.log(`Nema aktivne porudžbine za sto ${tableNum}`);
-    }
-}
+    
 
 //async function getOrderId(tableNum) {
 //    try {
@@ -277,12 +273,12 @@ async function drawAsideItems(tableNum) {
 
 function isOccupied(tableNum) {
 
-    fetch(`api/CoffeeShop/IsOccupied/${tableNum}`)
+     fetch(`api/CoffeeShop/IsOccupied/${tableNum}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Došlo je do greške");
             }
-            return response.json(); // ovo će biti true ili false
+            return response.json(); // true or false
         })
         .then(result => {
             if (result === false) {
@@ -310,31 +306,25 @@ function createNewOrder(tableNum) {
 }
 
 
-async function addOrderItem(tableNum) { ??????
-    const tableOrderId = await getOrderId(tableNum);
+ function addOrderItem(productIdentification, tableNumber) { 
 
+     //console.log(productIdentification);
+     //console.log(tableNumber);
     fetch('api/CoffeeShop/AddOrderItem', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ quantity: 1, orderId: tableOrderId,  }) 
+        body: JSON.stringify({ tableNum: tableNumber, productId: productIdentification }) 
     }).then(response => {
         if (!response.ok) Error("Error in createNewOrder response is not ok");
         else { console.log("createNewOrder is ok!") }
     });
 
+     console.log("Proba test");
+     //asideList.innerHTML = ''; // Clear previous items
+     //drawAsideItems(tableNumber);
 }
-
- btnAdd.addEventListener('click', (event) => {
-    const tableNum = Number(event.target.getAttribute('table-num') ?? -1);
-    const productId = Number(event.target.getAttribute('product-id') ?? -1);
-    if (tableNum === -1 || productId === -1) {
-        return;
-    }
-    addOrderItem(tableNum);
-
-});
 
 btnBack.addEventListener('click', (event) => {
     screenTable.classList.remove('hidden');
