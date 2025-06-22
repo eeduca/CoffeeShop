@@ -1,116 +1,4 @@
-﻿const products = [
-    {
-        id: 1,
-        name: 'Coca Cola',
-        price: 1.55,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 2,
-        name: 'Kapucino',
-        price: 2.60,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 3,
-        name: 'Espresso',
-        price: 1.80,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 4,
-        name: 'Pivo',
-        price: 2.00,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 5,
-        name: 'Vino',
-        price: 3.00,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 6,
-        name: 'Whiskey',
-        price: 4.50,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 7,
-        name: 'Rakija',
-        price: 2.50,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 8,
-        name: 'Caj',
-        price: 36.20,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 9,
-        name: 'Sok',
-        price: 1.80,
-        image: 'picsum.photos/256/256'
-    },
-    {
-        id: 10,
-        name: 'Mineralna voda',
-        price: 1.00,
-        image: 'picsum.photos/256/256'
-    }
-]
-
-const orderList = [
-    {
-        quantity: 14,
-        price: 54.80,
-        productName: "Caj"
-    },
-    {
-        quantity: 1,
-        price: 1.55,
-        productName: "Coca-Cola"
-    },
-    {
-        quantity: 2,
-        price: 3.60,
-        productName: "Sok"
-    },
-    {
-        quantity: 1,
-        price: 1.55,
-        productName: "Coca-Cola"
-    },
-    {
-        quantity: 2,
-        price: 3.60,
-        productName: "Sok"
-    },
-    {
-        quantity: 1,
-        price: 1.55,
-        productName: "Coca-Cola"
-    },
-    {
-        quantity: 2,
-        price: 3.60,
-        productName: "Sok"
-    },
-    {
-        quantity: 1,
-        price: 1.55,
-        productName: "Coca-Cola"
-    },
-    {
-        quantity: 2,
-        price: 3.60,
-        productName: "Sok"
-    }
-
-]
-
-const screenTable = document.getElementById('screen-table');
+﻿const screenTable = document.getElementById('screen-table');
 const screenMenu = document.getElementById('screen-menu');
 const screenAside = document.querySelector('aside');
 const asideList = document.getElementById('order-list');
@@ -196,84 +84,85 @@ function drawScreenMenu(tableNum) {
             };
             productCard.appendChild(btnAdd);
 
-           
-            });
+
         });
-    };
+    });
+};
 
 
 async function drawAsideItems(tableNum) {
-   
-        let title = document.createElement('div');
-        title.textContent = "Order List";
-        title.style.textAlign = "center";
-        title.style.fontWeight = "bold";
-        title.style.marginBottom = "1em";
-        asideList.appendChild(title);
+
+    let title = document.createElement('div');
+    title.textContent = "Order List";
+    title.style.textAlign = "center";
+    title.style.fontWeight = "bold";
+    title.style.marginBottom = "1em";
+    asideList.appendChild(title);
 
     fetch(`api/CoffeeShop/GetOrderItems/${tableNum}`).then(response => {
-            if (!response.ok) {
-                throw new Error(response.status);
+        if (!response.ok) {
+            throw new Error(response.status);
+        }
+        return response.json();
+    }).then(data => {
+
+        const orderItems = {};
+
+        data.forEach(item => {
+            if (!orderItems[item.productName]) {
+                orderItems[item.productName] = { quantity: 0, unitPrice: item.unitPrice };
             }
-            return response.json();
-        }).then(data => {
-            data.forEach((orderItem) => {
-                let orderItemBox = document.createElement('div');
-                orderItemBox.style.padding = "1em 0 0 0";
-                orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
-                asideList.appendChild(orderItemBox);
+            orderItems[item.productName].quantity += 1;
+        });
 
-                let itemName = document.createElement('span');
-                itemName.textContent = orderItem.productName;
-                itemName.style.display = "inline-block";
-                itemName.style.width = "40%";
-                itemName.style.textAlign = "left";
-                orderItemBox.appendChild(itemName);
+        Object.keys(orderItems).forEach((item) => {
 
-                let itemQuantity = document.createElement('span');
-                itemQuantity.textContent = "1";
-                itemQuantity.style.display = "inline-block";
-                itemQuantity.style.width = "20%";
-                itemQuantity.style.textAlign = "center";
-                itemQuantity.style.border = "1px solid var(--color-text)";
-                orderItemBox.appendChild(itemQuantity);
+            let orderItemBox = document.createElement('div');
+            orderItemBox.style.padding = "1em 0 0 0";
+            orderItemBox.style.borderBottom = "1px dashed var(--color-text)";
+            asideList.appendChild(orderItemBox);
 
-                let itemPrice = document.createElement('span');
-                itemPrice.textContent = `${orderItem.unitPrice.toFixed(2)} €`;
-                itemPrice.style.display = "inline-block";
-                itemPrice.style.width = "25%";
-                itemPrice.style.fontSize = "1.2em";
-                itemPrice.style.textAlign = "right";
-                orderItemBox.appendChild(itemPrice);
+            let itemName = document.createElement('span');
+            itemName.textContent = item;
+            itemName.style.display = "inline-block";
+            itemName.style.width = "40%";
+            itemName.style.textAlign = "left";
+            orderItemBox.appendChild(itemName);
+
+            let itemQuantity = document.createElement('span');
+            itemQuantity.textContent = orderItems[item].quantity;
+            itemQuantity.style.display = "inline-block";
+            itemQuantity.style.width = "20%";
+            itemQuantity.style.textAlign = "center";
+            itemQuantity.style.border = "1px solid var(--color-text)";
+            orderItemBox.appendChild(itemQuantity);
+
+            let itemPrice = document.createElement('span');
+            itemPrice.textContent = `${orderItems[item].unitPrice.toFixed(2)} €`;
+            itemPrice.style.display = "inline-block";
+            itemPrice.style.width = "25%";
+            itemPrice.style.fontSize = "1.2em";
+            itemPrice.style.textAlign = "right";
+            orderItemBox.appendChild(itemPrice);
 
 
-                let btnSub = document.createElement('button');
-                btnSub.textContent = '-';
-                btnSub.style.display = "inline-block";
-                btnSub.classList.add('btn-sub');
-                btnSub.style.marginLeft = "1em";
-                orderItemBox.appendChild(btnSub);
-            })
-       });
-    }
-    
-
-//async function getOrderId(tableNum) {
-//    try {
-//        const response = await fetch(`/api/CoffeeShop/GetOrderId/${tableNum}`);
-//        const orderId = await response.json();
-//        return orderId;
-//    }
-//    catch (error) {
-//        console.error(error);
-//        return null;
-//    }
-//}
+            let btnSub = document.createElement('button');
+            btnSub.textContent = '-';
+            btnSub.style.display = "inline-block";
+            btnSub.classList.add('btn-sub');
+            btnSub.style.marginLeft = "1em";
+            btnSub.onclick = event => {
+                removeOrderItem(product.id, tableNum);
+            };
+            orderItemBox.appendChild(btnSub);
+        })
+    });
+}
 
 
 function isOccupied(tableNum) {
 
-     fetch(`api/CoffeeShop/IsOccupied/${tableNum}`)
+    fetch(`api/CoffeeShop/IsOccupied/${tableNum}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Došlo je do greške");
@@ -306,24 +195,50 @@ function createNewOrder(tableNum) {
 }
 
 
- function addOrderItem(productIdentification, tableNumber) { 
+async function addOrderItem(productIdentification, tableNumber) {
+    try {
+        const response = await fetch('api/CoffeeShop/AddOrderItem', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ tableNum: tableNumber, productId: productIdentification })
+        });
 
-     //console.log(productIdentification);
-     //console.log(tableNumber);
-    fetch('api/CoffeeShop/AddOrderItem', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ tableNum: tableNumber, productId: productIdentification }) 
-    }).then(response => {
-        if (!response.ok) Error("Error in createNewOrder response is not ok");
-        else { console.log("createNewOrder is ok!") }
-    });
+        if (!response.ok) Error("Error in addOrderItem response is not ok");
+        else { console.log("addOrderItem is ok!") }
 
-     console.log("Proba test");
-     //asideList.innerHTML = ''; // Clear previous items
-     //drawAsideItems(tableNumber);
+    }
+    catch (error) {
+        console.error(error);
+        return null;
+    }
+    //console.log("Proba test");
+    asideList.innerHTML = ''; // Clear previous items
+    drawAsideItems(tableNumber);
+}
+
+async function removeOrderItem(productIdentification, tableNumber) {
+    try {
+        const response = await fetch('api/CoffeeShop/RemoveOrderItem', {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ tableNum: tableNumber, productId: productIdentification })
+        });
+
+        if (!response.ok) Error("Error in removeOrderItem response is not ok");
+        else { console.log("removeOrderItem is ok!") }
+
+    }
+    catch (error) {
+        console.error(error);
+        return null;
+    }
+    //console.log("Proba test");
+    asideList.innerHTML = ''; // Clear previous items
+    drawAsideItems(tableNumber);
 }
 
 btnBack.addEventListener('click', (event) => {

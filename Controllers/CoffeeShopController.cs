@@ -27,7 +27,7 @@ namespace CoffeeShop.Controllers
         public int ProductId { get; set; }
 
     }
-    public class addOrderItemDto
+    public class orderItemDto
     {
         public int TableNum { get; set; }
         public int ProductId { get; set; }
@@ -78,13 +78,19 @@ namespace CoffeeShop.Controllers
         public async Task<int> GetOrderId(int tableNum) //kako da vratim int, a ne IActionResult?
         {
             var order = await _context.Orders
+                .Select(o => new
+                {
+                    o.Id,
+                    o.TableNumber,
+                    o.TimeOfPayment
+                })
                 .FirstOrDefaultAsync(o => o.TableNumber == tableNum && o.TimeOfPayment == null);
             if (order == null) return -1; // Return -1 if no active order is found
             return order.Id;
         }
 
         [HttpPost("AddOrderItem")]
-        public async Task<IActionResult> AddOrderItem([FromBody] addOrderItemDto addOrderItem)
+        public async Task<IActionResult> AddOrderItem([FromBody] orderItemDto addOrderItem)
         {
             var orderId = GetOrderId(addOrderItem.TableNum);
             if (orderId.Result == -1)
@@ -116,7 +122,36 @@ namespace CoffeeShop.Controllers
             return BadRequest("Invalid order item data.");
 }
 
-[HttpPost ("CreateOrder")]
+        [HttpDelete("RemoveOrderItem")]
+        public async Task<IActionResult> RemoveOrderItem([FromBody] orderItemDto removeOrderItem)
+        {
+            var orderId = GetOrderId(removeOrderItem.TableNum);
+            if (orderId.Result == -1)
+            {
+                return BadRequest("No active order found for the specified table number.");
+            }
+
+            var productItem = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == removeOrderItem.ProductId && p.IsActive);
+            if (productItem == null)
+            {
+                return BadRequest("Product not found or is inactive.");
+            }
+
+            var item = await _context.OrderItems
+                .Where(o => o.OrderId == orderId.Result && o.ProductId == productItem.Id)
+                .FirstAsync();
+
+            if (item != null)
+            {
+                _context.OrderItems.Remove(item);
+                await _context.SaveChangesAsync();
+            }
+            return Ok();
+            
+        }
+
+        [HttpPost ("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto order)
         {
             var newOrder = new Order
