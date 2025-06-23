@@ -29,8 +29,9 @@ namespace CoffeeShop.Controllers
     }
     public class orderItemDto
     {
+        public string ?Name { get; set; }
         public int TableNum { get; set; }
-        public int ProductId { get; set; }
+        public int ?ProductId { get; set; }
 
     }
 
@@ -132,7 +133,7 @@ namespace CoffeeShop.Controllers
             }
 
             var productItem = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == removeOrderItem.ProductId && p.IsActive);
+                .FirstOrDefaultAsync(p => p.Name == removeOrderItem.Name && p.IsActive);
             if (productItem == null)
             {
                 return BadRequest("Product not found or is inactive.");

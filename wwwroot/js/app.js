@@ -8,17 +8,18 @@ const btnBack = document.getElementById('btn-back');
 const btnAdd = document.querySelectorAll('.btn-add');
 
 tables.forEach((table) => {
-    table.addEventListener('click', (event) => {
+    table.addEventListener('click', async (event) => {
         const tableNum = Number(event.target.getAttribute('data-table-id') ?? -1);
         if (tableNum === -1) {
             return;
         }
 
         asideList.innerHTML = ''; // Clear previous items
+        asideBottom.innerHTML = ''; // Clear previous items
         screenMenu.innerHTML = ''; // Clear previous items
         //console.log(tableNum);
         drawScreenMenu(tableNum);
-        isOccupied(tableNum);
+        await isOccupied(tableNum);
         drawAsideItems(tableNum);
 
         screenTable.classList.add('hidden');
@@ -90,7 +91,7 @@ function drawScreenMenu(tableNum) {
 };
 
 
-async function drawAsideItems(tableNum) {
+function drawAsideItems(tableNum) {
 
     let title = document.createElement('div');
     title.textContent = "Order List";
@@ -107,12 +108,14 @@ async function drawAsideItems(tableNum) {
     }).then(data => {
 
         const orderItems = {};
+        var totalPrice = 0.0;
 
         data.forEach(item => {
             if (!orderItems[item.productName]) {
                 orderItems[item.productName] = { quantity: 0, unitPrice: item.unitPrice };
             }
             orderItems[item.productName].quantity += 1;
+            totalPrice += item.unitPrice;
         });
 
         Object.keys(orderItems).forEach((item) => {
@@ -152,17 +155,33 @@ async function drawAsideItems(tableNum) {
             btnSub.classList.add('btn-sub');
             btnSub.style.marginLeft = "1em";
             btnSub.onclick = event => {
-                removeOrderItem(product.id, tableNum);
+                removeOrderItem(item, tableNum);
             };
             orderItemBox.appendChild(btnSub);
         })
+
+
+        let totalPriceTag = document.createElement('div');
+        totalPriceTag.textContent = `Total ${totalPrice.toFixed(2)} €`;
+        totalPriceTag.style.textAlign = 'right';
+        totalPriceTag.style.padding = "1em 0 0 0";
+        asideBottom.appendChild(totalPriceTag);
+
+        let btnPrint = document.createElement('button');
+        btnPrint.textContent = 'Print';
+        btnPrint.classList.add('print');
+        btnPrint.onclick = event => {
+            console.log('Print');
+        };
+        asideBottom.appendChild(btnPrint);
+
     });
 }
 
 
 function isOccupied(tableNum) {
 
-    fetch(`api/CoffeeShop/IsOccupied/${tableNum}`)
+    return fetch(`api/CoffeeShop/IsOccupied/${tableNum}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Došlo je do greške");
@@ -214,18 +233,19 @@ async function addOrderItem(productIdentification, tableNumber) {
         return null;
     }
     //console.log("Proba test");
-    asideList.innerHTML = ''; // Clear previous items
+    asideList.innerHTML = '';// Clear previous items
+    asideBottom.innerHTML = '';// Clear previous items
     drawAsideItems(tableNumber);
 }
 
-async function removeOrderItem(productIdentification, tableNumber) {
+async function removeOrderItem(productName, tableNumber) {
     try {
         const response = await fetch('api/CoffeeShop/RemoveOrderItem', {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ tableNum: tableNumber, productId: productIdentification })
+            body: JSON.stringify({ tableNum: tableNumber, name: productName })
         });
 
         if (!response.ok) Error("Error in removeOrderItem response is not ok");
@@ -238,6 +258,7 @@ async function removeOrderItem(productIdentification, tableNumber) {
     }
     //console.log("Proba test");
     asideList.innerHTML = ''; // Clear previous items
+    asideBottom.innerHTML = '';// Clear previous items
     drawAsideItems(tableNumber);
 }
 
