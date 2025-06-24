@@ -6,6 +6,8 @@ const asideBottom = screenAside.querySelector(".aside-bottom")
 const tables = screenTable.querySelectorAll('.btn-table');
 const btnBack = document.getElementById('btn-back');
 const btnAdd = document.querySelectorAll('.btn-add');
+const cancelReceiptBtn = document.getElementById("closeModal");
+const modal = document.getElementById("modal");
 
 tables.forEach((table) => {
     table.addEventListener('click', async (event) => {
@@ -171,7 +173,7 @@ function drawAsideItems(tableNum) {
         btnPrint.textContent = 'Print';
         btnPrint.classList.add('print');
         btnPrint.onclick = event => {
-            console.log('Print');
+            printReceipt(tableNum, totalPrice);
         };
         asideBottom.appendChild(btnPrint);
 
@@ -261,6 +263,93 @@ async function removeOrderItem(productName, tableNumber) {
     asideBottom.innerHTML = '';// Clear previous items
     drawAsideItems(tableNumber);
 }
+
+function printReceipt(tableNumber, totalPrice) {
+    console.log(`TableNum is ${tableNumber} in printReceipt func`);
+    asideList.innerHTML = '';
+
+    let title = document.createElement('div');
+    title.textContent = "Order Receipt";
+    title.style.textAlign = "center";
+    title.style.fontWeight = "bold";
+    title.style.marginBottom = "1em";
+    asideList.appendChild(title);
+
+    fetch(`api/CoffeeShop/GetOrder/${tableNumber}`).then(response => {
+        if (!response.ok) {
+            throw new Error(response.status);
+        }
+        return response.json();
+    }).then(data => {
+
+        data.forEach((item) => {
+            let tableNumBox = document.createElement('div');
+            tableNumBox.style.padding = "1em 0 0 0";
+            tableNumBox.style.borderBottom = "1px dashed var(--color-text)";
+            asideList.appendChild(tableNumBox);
+
+            let tableNumLabel = document.createElement('span');
+            tableNumLabel.textContent = 'Table number:';
+            tableNumLabel.style.display = "inline-block";
+            tableNumLabel.style.width = "60%";
+            tableNumLabel.style.textAlign = "left";
+            tableNumBox.appendChild(tableNumLabel);
+
+            let tableNum = document.createElement('span');
+            tableNum.textContent = `${tableNumber}`;
+            tableNum.style.display = "inline-block";
+            tableNum.style.width = "25%";
+            tableNum.style.fontSize = "1.2em";
+            tableNum.style.textAlign = "right";
+            tableNumBox.appendChild(tableNum);
+
+            let totalPriceBox = document.createElement('div');
+            totalPriceBox.style.padding = "1em 0 0 0";
+            totalPriceBox.style.borderBottom = "1px dashed var(--color-text)";
+            asideList.appendChild(totalPriceBox);
+
+            let totalPriceLabel = document.createElement('span');
+            totalPriceLabel.textContent = 'Total:';
+            totalPriceLabel.style.display = "inline-block";
+            totalPriceLabel.style.width = "60%";
+            totalPriceLabel.style.textAlign = "left";
+            totalPriceBox.appendChild(totalPriceLabel);
+
+            let totalPriceValue = document.createElement('span');
+            totalPriceValue.textContent = `${totalPrice.toFixed(2)} €`;
+            totalPriceValue.style.display = "inline-block";
+            totalPriceValue.style.width = "25%";
+            totalPriceValue.style.fontSize = "1.2em";
+            totalPriceValue.style.textAlign = "right";
+            totalPriceBox.appendChild(totalPriceValue);
+
+            let btnCancel = document.createElement('button');
+            btnCancel.textContent = 'Cancel';
+            btnCancel.style.display = "inline";
+            btnCancel.classList.add('btn-sub');
+            btnCancel.style.marginLeft = "1em";
+            btnCancel.onclick = event => {
+                cancelReceipt();
+            };
+            asideList.appendChild(btnDone);
+
+            let btnDone = document.createElement('button');
+            btnDone.textContent = 'Done';
+            btnDone.style.display = "inline";
+            btnDone.classList.add('btn-sub');
+            btnDone.style.marginLeft = "1em";
+            btnDone.onclick = event => {
+                cancelReceipt();
+            };
+            asideList.appendChild(btnDone);
+
+        });
+    });
+
+    }
+function cancelReceipt() {
+            console.log("Close the window");
+        }
 
 btnBack.addEventListener('click', (event) => {
     screenTable.classList.remove('hidden');

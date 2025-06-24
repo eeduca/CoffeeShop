@@ -71,6 +71,21 @@ namespace CoffeeShop.Controllers
 
         }
 
+        [HttpGet("GetOrder/{tableNum}")]
+        public async Task<IActionResult> GetOrder(int tableNum)
+        {
+            var order = await _context.Orders
+                .Select(o => new {
+                    o.Id,
+                    o.Tip,
+                    o.TimeOfPayment,
+                    o.TableNumber
+                })
+                .Where(o => o.TableNumber == tableNum)
+                .ToListAsync();
+            return Ok(order);
+
+        }
 
         /// <summary>
         /// Method <c>GetOrderId</c> returns -1 if there is no order for specified table number.
