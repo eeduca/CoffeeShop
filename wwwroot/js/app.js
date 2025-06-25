@@ -8,6 +8,7 @@ const btnBack = document.getElementById('btn-back');
 const btnAdd = document.querySelectorAll('.btn-add');
 const cancelReceiptBtn = document.getElementById("closeModal");
 const modal = document.getElementById("modal");
+const tip = document.getElementById("tip");
 
 tables.forEach((table) => {
     table.addEventListener('click', async (event) => {
@@ -267,6 +268,8 @@ async function removeOrderItem(productName, tableNumber) {
 function printReceipt(tableNumber, totalPrice) {
     console.log(`TableNum is ${tableNumber} in printReceipt func`);
     asideList.innerHTML = '';
+    asideBottom.innerHTML = '';
+
 
     let title = document.createElement('div');
     title.textContent = "Order Receipt";
@@ -275,82 +278,115 @@ function printReceipt(tableNumber, totalPrice) {
     title.style.marginBottom = "1em";
     asideList.appendChild(title);
 
-    fetch(`api/CoffeeShop/GetOrder/${tableNumber}`).then(response => {
-        if (!response.ok) {
-            throw new Error(response.status);
-        }
-        return response.json();
-    }).then(data => {
+    let tableNumBox = document.createElement('div');
+    tableNumBox.style.padding = "1em 0 0 0";
+    tableNumBox.style.borderBottom = "1px dashed var(--color-text)";
+    asideList.appendChild(tableNumBox);
 
-        data.forEach((item) => {
-            let tableNumBox = document.createElement('div');
-            tableNumBox.style.padding = "1em 0 0 0";
-            tableNumBox.style.borderBottom = "1px dashed var(--color-text)";
-            asideList.appendChild(tableNumBox);
+    let tableNumLabel = document.createElement('span');
+    tableNumLabel.textContent = 'Table number:';
+    tableNumLabel.style.display = "inline-block";
+    tableNumLabel.style.width = "60%";
+    tableNumLabel.style.textAlign = "left";
+    tableNumBox.appendChild(tableNumLabel);
 
-            let tableNumLabel = document.createElement('span');
-            tableNumLabel.textContent = 'Table number:';
-            tableNumLabel.style.display = "inline-block";
-            tableNumLabel.style.width = "60%";
-            tableNumLabel.style.textAlign = "left";
-            tableNumBox.appendChild(tableNumLabel);
+    let tableNum = document.createElement('span');
+    tableNum.textContent = `${tableNumber}`;
+    tableNum.style.display = "inline-block";
+    tableNum.style.width = "25%";
+    tableNum.style.fontSize = "1.2em";
+    tableNum.style.textAlign = "right";
+    tableNumBox.appendChild(tableNum);
 
-            let tableNum = document.createElement('span');
-            tableNum.textContent = `${tableNumber}`;
-            tableNum.style.display = "inline-block";
-            tableNum.style.width = "25%";
-            tableNum.style.fontSize = "1.2em";
-            tableNum.style.textAlign = "right";
-            tableNumBox.appendChild(tableNum);
+    let totalPriceBox = document.createElement('div');
+    totalPriceBox.style.padding = "1em 0 0 0";
+    totalPriceBox.style.borderBottom = "1px dashed var(--color-text)";
+    asideList.appendChild(totalPriceBox);
 
-            let totalPriceBox = document.createElement('div');
-            totalPriceBox.style.padding = "1em 0 0 0";
-            totalPriceBox.style.borderBottom = "1px dashed var(--color-text)";
-            asideList.appendChild(totalPriceBox);
+    let totalPriceLabel = document.createElement('span');
+    totalPriceLabel.textContent = 'Total:';
+    totalPriceLabel.style.display = "inline-block";
+    totalPriceLabel.style.width = "60%";
+    totalPriceLabel.style.textAlign = "left";
+    totalPriceBox.appendChild(totalPriceLabel);
 
-            let totalPriceLabel = document.createElement('span');
-            totalPriceLabel.textContent = 'Total:';
-            totalPriceLabel.style.display = "inline-block";
-            totalPriceLabel.style.width = "60%";
-            totalPriceLabel.style.textAlign = "left";
-            totalPriceBox.appendChild(totalPriceLabel);
+    let totalPriceValue = document.createElement('span');
+    totalPriceValue.textContent = `${totalPrice.toFixed(2)} €`;
+    totalPriceValue.style.display = "inline-block";
+    totalPriceValue.style.width = "25%";
+    totalPriceValue.style.fontSize = "1.2em";
+    totalPriceValue.style.textAlign = "right";
+    totalPriceBox.appendChild(totalPriceValue);
 
-            let totalPriceValue = document.createElement('span');
-            totalPriceValue.textContent = `${totalPrice.toFixed(2)} €`;
-            totalPriceValue.style.display = "inline-block";
-            totalPriceValue.style.width = "25%";
-            totalPriceValue.style.fontSize = "1.2em";
-            totalPriceValue.style.textAlign = "right";
-            totalPriceBox.appendChild(totalPriceValue);
+    let tipInputLabel = document.createElement('label');
+    tipInputLabel.textContent = "Tip:";
+    tipInputLabel.style.padding = "1em 0 0 0";
+    tipInputLabel.style.display = "inline-block";
+    tipInputLabel.style.width = "60%";
+    tipInputLabel.style.borderBottom = "1px dashed var(--color-text)";
+    asideList.appendChild(tipInputLabel);
 
-            let btnCancel = document.createElement('button');
-            btnCancel.textContent = 'Cancel';
-            btnCancel.style.display = "inline";
-            btnCancel.classList.add('btn-sub');
-            btnCancel.style.marginLeft = "1em";
-            btnCancel.onclick = event => {
-                cancelReceipt();
-            };
-            asideList.appendChild(btnDone);
+    let tipInputValue = document.createElement('input');
+    tipInputValue.type = "number";
+    tipInputValue.id = "tip";
+    tipInputValue.style.display = "inline-block";
+    tipInputValue.value = 0;
+    tipInputValue.style.padding = "1em 0 0 0";
+    tipInputValue.style.width = "25%";
+    tipInputValue.style.borderBottom = "1px dashed var(--color-text)";
 
-            let btnDone = document.createElement('button');
-            btnDone.textContent = 'Done';
-            btnDone.style.display = "inline";
-            btnDone.classList.add('btn-sub');
-            btnDone.style.marginLeft = "1em";
-            btnDone.onclick = event => {
-                cancelReceipt();
-            };
-            asideList.appendChild(btnDone);
+    asideList.appendChild(tipInputValue);
 
-        });
+    let btnCancel = document.createElement('button');
+    btnCancel.textContent = 'Cancel';
+    btnCancel.classList.add('btnReceipt');
+    btnCancel.style.marginLeft = "1em";
+    btnCancel.onclick = event => {
+        cancelReceipt(tableNumber);
+    };
+    asideBottom.appendChild(btnCancel);
+
+    let btnDone = document.createElement('button');
+    btnDone.textContent = 'Done';
+    btnDone.classList.add('btnReceipt');
+    btnDone.style.marginLeft = "1em";
+    btnDone.onclick = event => {
+        doneReceipt(tableNumber, tipInputValue.value);
+    };
+    asideBottom.appendChild(btnDone);
+}
+
+function cancelReceipt(tableNumber) {
+    console.log("Close the window");
+    console.log(tipInputValue.value);
+    asideList.innerHTML = '';
+    asideBottom.innerHTML = '';
+    drawAsideItems(tableNumber);
+    
+}
+function doneReceipt(tableNum, tipValue) {
+    console.log("Done reciept");
+
+    fetch(`api/CoffeeShop/CompleteOrder`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ tableNumber: tableNum, tip: tipValue }) // Replace with the actual table number
+    }).then(response => {
+        if (!response.ok) Error("Error in doneReceipt response is not ok");
+        else { console.log("doneReceipt is ok!") }
     });
 
-    }
-function cancelReceipt() {
-            console.log("Close the window");
-        }
+    asideList.innerHTML = '';
+    asideBottom.innerHTML = '';
+    screenTable.classList.remove('hidden');
+    screenMenu.classList.add('hidden');
+    btnBack.classList.add('hidden');
+    asideBottom.classList.add('hidden');
+    asideList.classList.add('hidden');
 
+}
 btnBack.addEventListener('click', (event) => {
     screenTable.classList.remove('hidden');
     screenMenu.classList.add('hidden');

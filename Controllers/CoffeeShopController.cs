@@ -81,8 +81,8 @@ namespace CoffeeShop.Controllers
                     o.TimeOfPayment,
                     o.TableNumber
                 })
-                .Where(o => o.TableNumber == tableNum)
-                .ToListAsync();
+                .Where(o => o.TableNumber == tableNum && o.TimeOfPayment == null)
+                .FirstOrDefaultAsync();
             return Ok(order);
 
         }
@@ -199,5 +199,30 @@ namespace CoffeeShop.Controllers
                 .AnyAsync();
             return Ok(isOccupied);
         }
+
+        [HttpPatch("CompleteOrder")]
+        public async Task<IActionResult> CompleteOrder([FromBody] OrderDto newOrder)
+        {
+            var orderId = GetOrderId(newOrder.TableNumber);
+            if (orderId.Result == -1)
+            {
+                return BadRequest("No active order found for the specified table number.");
+            }
+
+            var order = await _context.Orders.FindAsync(orderId.Result);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            // update, patch
+            order.Tip = newOrder.Tip;
+            order.TimeOfPayment = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return Ok(order);
+        }
+
     }
 }

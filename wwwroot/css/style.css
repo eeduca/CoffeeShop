@@ -101,6 +101,19 @@ aside {
     align-self: center;
 }
 
+.btnReceipt {
+    background-color: var(--color-accent);
+    border-radius: 1em;
+    /*border: solid 2px var(--color-border);*/
+    padding: 1em 2em;
+    color: var(--color-text);
+    display: inline;
+    width: 11em;
+    margin-top: 1em;
+    text-align: center;
+    align-self: center;
+}
+
 .btn-add {
     background-color: var(--color-accent);
     border-radius: 50%;
