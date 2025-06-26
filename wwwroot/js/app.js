@@ -96,6 +96,7 @@ function drawScreenMenu(tableNum) {
 
 function drawAsideItems(tableNum) {
 
+    asideBottom.style.flexDirection = "column";
     let title = document.createElement('div');
     title.textContent = "Order List";
     title.style.textAlign = "center";
@@ -173,9 +174,16 @@ function drawAsideItems(tableNum) {
         let btnPrint = document.createElement('button');
         btnPrint.textContent = 'Print';
         btnPrint.classList.add('print');
-        btnPrint.onclick = event => {
+        btnPrint.style.visibility = "hidden";
+        document.querySelector(`#table${tableNum}.btn-table`).style.borderColor = "var(--color-secondary)";
+
+        if (Object.keys(orderItems).length > 0) {
+            document.querySelector(`#table${tableNum}.btn-table`).style.borderColor = "var(--color-occupied)";
+            btnPrint.style.visibility = "visible";
+            btnPrint.onclick = event => {
             printReceipt(tableNum, totalPrice);
-        };
+        };}
+       
         asideBottom.appendChild(btnPrint);
 
     });
@@ -236,6 +244,7 @@ async function addOrderItem(productIdentification, tableNumber) {
         return null;
     }
     //console.log("Proba test");
+    document.querySelector(`#table${tableNumber}.btn-table`).style.borderColor = "var(--color-occupied)";
     asideList.innerHTML = '';// Clear previous items
     asideBottom.innerHTML = '';// Clear previous items
     drawAsideItems(tableNumber);
@@ -269,8 +278,7 @@ function printReceipt(tableNumber, totalPrice) {
     console.log(`TableNum is ${tableNumber} in printReceipt func`);
     asideList.innerHTML = '';
     asideBottom.innerHTML = '';
-
-
+    asideBottom.style.flexDirection = "row";
     let title = document.createElement('div');
     title.textContent = "Order Receipt";
     title.style.textAlign = "center";
@@ -293,7 +301,7 @@ function printReceipt(tableNumber, totalPrice) {
     let tableNum = document.createElement('span');
     tableNum.textContent = `${tableNumber}`;
     tableNum.style.display = "inline-block";
-    tableNum.style.width = "25%";
+    tableNum.style.width = "35%";
     tableNum.style.fontSize = "1.2em";
     tableNum.style.textAlign = "right";
     tableNumBox.appendChild(tableNum);
@@ -313,7 +321,7 @@ function printReceipt(tableNumber, totalPrice) {
     let totalPriceValue = document.createElement('span');
     totalPriceValue.textContent = `${totalPrice.toFixed(2)} €`;
     totalPriceValue.style.display = "inline-block";
-    totalPriceValue.style.width = "25%";
+    totalPriceValue.style.width = "35%";
     totalPriceValue.style.fontSize = "1.2em";
     totalPriceValue.style.textAlign = "right";
     totalPriceBox.appendChild(totalPriceValue);
@@ -330,9 +338,13 @@ function printReceipt(tableNumber, totalPrice) {
     tipInputValue.type = "number";
     tipInputValue.id = "tip";
     tipInputValue.style.display = "inline-block";
+    tipInputValue.style.background= "none";
+    tipInputValue.style.color= "white";
+    tipInputValue.style.fontSize = "1.2em";
+    tipInputValue.style.color= "var(--color - text)";
     tipInputValue.value = 0;
     tipInputValue.style.padding = "1em 0 0 0";
-    tipInputValue.style.width = "25%";
+    tipInputValue.style.width = "35%";
     tipInputValue.style.borderBottom = "1px dashed var(--color-text)";
 
     asideList.appendChild(tipInputValue);
@@ -358,7 +370,6 @@ function printReceipt(tableNumber, totalPrice) {
 
 function cancelReceipt(tableNumber) {
     console.log("Close the window");
-    console.log(tipInputValue.value);
     asideList.innerHTML = '';
     asideBottom.innerHTML = '';
     drawAsideItems(tableNumber);
@@ -378,6 +389,7 @@ function doneReceipt(tableNum, tipValue) {
         else { console.log("doneReceipt is ok!") }
     });
 
+    document.querySelector(`#table${tableNum}.btn-table`).style.borderColor = "var(--color-secondary)";
     asideList.innerHTML = '';
     asideBottom.innerHTML = '';
     screenTable.classList.remove('hidden');
@@ -387,6 +399,7 @@ function doneReceipt(tableNum, tipValue) {
     asideList.classList.add('hidden');
 
 }
+
 btnBack.addEventListener('click', (event) => {
     screenTable.classList.remove('hidden');
     screenMenu.classList.add('hidden');
